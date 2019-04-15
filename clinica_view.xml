@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding= "utf-8"?>
+<odoo>
+	<data>
+		<!--> View tree do cadastro de pacientes com o campo data de nascimento<-->
+		<record id="view_partner_tree" model="ir.ui.view">
+			<field name="inherit_id" ref="base.view_partner_tree"/>
+			<field name="model">res.partner</field>
+			<field name="arch" type="xml">
+				<field name="phone" position="before">
+					<field name="dt_nascimento"/>
+				</field>
+			</field>
+		</record>
+
+		<!--> View form cadastro de pacientes com o campo data de nascimento<-->
+		<record id="view_partner_form_clinica" model="ir.ui.view">
+			<field name="inherit_id" ref="base.view_partner_form"/>
+			<field name="model">res.partner</field>
+			<field name="arch" type="xml">
+				<field name="function" position="before">
+					<field name="dt_nascimento"/>
+				</field>
+			</field>
+		</record>
+
+		<!--> Action do menu Pacientes<-->
+		<record id="action_partner" model="ir.actions.act_window">
+            <field name="name">Pacientes</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="base.view_partner_tree"/>
+            <field name="domain">[('name','!=','Administrator'),('name','!=','My Company')]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Clique para adicionar um paciente.
+                </p><p>
+                    Você deve definir um paciente para conseguir agendar consultas e marcar exames.               
+                </p><p>
+                    O formulário de pacientes contém informações relacionadas as informações referentes ao cadastro de cliente nos sistemas da clínica.
+                </p>
+            </field>
+        </record>
+		
+		<!--> Criação do Menu Paciente<-->
+		<menuitem action ="action_partner"
+			id="clinica_sale_order_menu"
+            parent="sale.sale_order_menu"
+            sequence="4"/>
+
+        <!--> View tree do cadastro de exames<-->
+        <record id="view_clinica_tree" model="ir.ui.view">
+            <field name="name">exame.template.tree</field>
+            <field name="model">exame.template</field>
+            <field name="arch" type="xml">
+                <tree string="Exames">
+                    <field name="id" invisible="1"/>
+                    <field name="name"/>
+                    <field name="valor"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-->View form do cadastro de exames<-->
+        <record id="view_clinica_form" model="ir.ui.view">
+            <field name="name">exame.template.form</field>
+            <field name="model">exame.template</field>
+            <field name="arch" type="xml">
+                <form string="Exame">
+                    <sheet>
+                        <field name="image_medium" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <label class="oe_edit_only" for="name" string="Nome do Exame"/>
+                            <h1><field name="name" placeholder="Nome do Exame"/></h1>
+                        </div>
+                        <notebook>
+                            <page string="Informações Gerais" name="general_information">
+                                <group>
+                                    <group name="group_preco">
+                                        <field name="valor" string="Valor" widget='monetary'/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Agendamento" name="Agendamento">
+                                <group name="group_consulta">
+                                    <field name="ids_agendamento" string="Agendamento" widget="one2many_list">
+                                        <tree string="Agendamento de exames" editable="bottom">
+                                            <field name="id_exame"/>
+                                            <field name="dt_exame"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page string="Descrição" name="notes">
+                                <group name="description_internal">
+                                    <group string="Descrição do Exame">
+                                        <field name="descricao" nolabel="1" placeholder="Insira a descrição do exame aqui."/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--> Action do Menu de Exames<-->
+        <record id="exame_product_template_action" model="ir.actions.act_window">
+        <field name="name">Exames</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">exame.template</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('name','!=','')]</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Clique para adicionar um exame.
+            </p><p>
+                Você deve definir pelo menos um exame para conseguir agendar consultas com seu respectivo exame.               
+            </p>
+        </field>
+        </record>
+
+        <!--> Criação do Menu de Exames<-->
+		<menuitem action="exame_product_template_action"
+            id="menu_exame_product_template_action"
+            parent="sale.product_menu_catalog" sequence="14" />
+
+        <!-->View tree do agendamento de consulta<-->
+        <record id="view_agendamento_consulta_tree" model="ir.ui.view">
+            <field name="name">agenda_consulta_template.tree</field>
+            <field name="model">agenda_consulta_template</field>
+            <field name="arch" type="xml">
+                <tree string="Agendamento de Consulta">
+                    <field name="name"/>
+                    <field name="dt_consulta" string="Data e Hora da Consulta"/>
+                    <field name="nota" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-->View form do agendamento de consulta<-->
+        <record id="view_agendamento_consulta_form" model="ir.ui.view">
+            <field name="name">agenda_consulta_template.form</field>
+            <field name="model">agenda_consulta_template</field>
+            <field name="arch" type="xml">
+                <form string="Agendamento de Consulta">
+                    <sheet>
+                        <field name="image_medium" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <label class="oe_edit_only" for="name" string="Paciente"/>
+                            <h1><field name="name" placeholder="Paciente"/></h1>
+                        </div>
+                        <group name="data_consulta">
+                            <field name="dt_consulta" string="Data da Consulta"/>
+                        </group>
+                        <notebook>
+                            <page string="Notas" name="notas">
+                                <group name="group_notes">
+                                    <field name="nota" string="Observações"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--> Action do Menu de agendamento de consulta<-->
+        <record id="agenda_consulta_action" model="ir.actions.act_window">
+        <field name="name">Consulta</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">agenda_consulta_template</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_type">form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Clique para adicionar uma consulta.
+            </p><p>
+                Você define uma consulta de acordo com os pacientes cadastrados no sistema.               
+            </p>
+        </field>
+        </record>
+       
+
+        <!--> Criação do Menu de Agendamentos<-->
+        <menuitem id="menu_agendamento"
+            name="Agendamento"
+            parent="sale.sale_menu_root"
+            sequence="4"/>
+
+        <!--> Criação do Menu de Agendamento de Consulta<-->
+        <menuitem id="agenda_consulta_menu"
+            parent="menu_agendamento"
+            action="agenda_consulta_action"
+            sequence="5"/>
+
+        <!-->View tree do agendamento de exame<-->
+        <record id="view_agendamento_exame_tree" model="ir.ui.view">
+            <field name="name">agenda_exame_template.tree</field>
+            <field name="model">agenda_exame_template</field>
+            <field name="arch" type="xml">
+                <tree string="Agendamento de Exame">
+                    <field name="id_consulta" string="Paciente"/>
+                    <field name="id_exame"/>
+                    <field name="dt_exame" string="Data e Hora do Exame"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-->View form do agendamento de exame<-->
+        <record id="view_agendamento_exame_form" model="ir.ui.view">
+            <field name="name">agenda_exame_template.form</field>
+            <field name="model">agenda_exame_template</field>
+            <field name="arch" type="xml">
+                <form string="Agendamento de Exame">
+                    <sheet>
+                        <field name="image_medium" widget="image" class="oe_avatar"/>
+                        <div class="oe_title">
+                            <label class="oe_edit_only" for="id_exame" string="Exame"/>
+                            <h1><field name="id_exame" placeholder="Exame"/></h1>
+                        </div>
+                        <notebook> 
+                            <page string="Agenda" name="agenda_consulta_exame">
+                                <group name="group_consulta">
+                                    <field name="id_consulta" string="Consulta de"/>
+                                </group>
+                                <group name="data_exame">
+                                    <field name="dt_exame" string="Data do Exame"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!--> Action do Menu de agendamento de Exame<-->
+        <record id="exame_consulta_action" model="ir.actions.act_window">
+        <field name="name">Exame</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">agenda_exame_template</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_type">form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Clique para adicionar um exame.
+            </p><p>
+                Você define um exame a partir das consultas marcadas.               
+            </p>
+        </field>
+        </record>
+
+        <!--> Criação do Menu de Agendamento de Exames<-->
+        <menuitem id="exame_consulta_menu"
+            parent="menu_agendamento"
+            action="exame_consulta_action"
+            sequence="6"/>
+        
+	</data>
+</odoo>
+
